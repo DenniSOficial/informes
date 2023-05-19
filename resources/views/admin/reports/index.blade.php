@@ -19,7 +19,7 @@
                 <div class="col-md-8">
                     <h4 class="page-title mb-1">Sistema de Informes</h4>
                     <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item active">Listado de Normas</li>
+                    <li class="breadcrumb-item active">Listado de Informes</li>
                     </ol>
                 </div>
                 <div class="col-md-4">
@@ -29,8 +29,8 @@
                                 <i class="mdi mdi-settings-outline mr-1"></i> Opciones
                             </button>
                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-animated">
-                                <a class="dropdown-item" id="btnOpenModalImport" data-toggle="modal" data-target="#myModal">Importar data</a>
-                                <a class="dropdown-item" href="{{ route('norm.create') }}">Nuevo</a>
+                                {{-- <a class="dropdown-item" id="btnOpenModalImport" data-toggle="modal" data-target="#myModal">Importar data</a> --}}
+                                <a class="dropdown-item" href="{{ route('report.create') }}">Nuevo</a>
                                 {{-- <a class="dropdown-item" href="#">Another action</a>
                                 <a class="dropdown-item" href="#">Something else here</a>
                                 <div class="dropdown-divider"></div>
@@ -63,27 +63,29 @@
                             <table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                 <tr>
-                                    <th>Codigo</th>
-                                    <th>Autoridad</th>
-                                    <th>Norma Aplicable</th>
-                                    <th>Nombre Corto</th>
+                                    
+                                    <th>Cotización</th>
+                                    <th>Cliente</th>
+                                    <th>Ejecutivo</th>
                                     <th>Fecha Expedición</th>
-                                    <th>Fecha Notificación</th>
+                                    <th>Tipo</th>
+                                    <th>A nombre de</th>
                                     <th>Opciones</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                    @isset($norms)
-                                        @foreach ($norms as $norm)
+                                    @isset($reports)
+                                        @foreach ($reports as $report)
                                             <tr>
-                                                <td>{{ $norm->CodeNorm }}</td>
-                                                <td>{{ $norm->authority->Name }}</td>
-                                                <td>{{ $norm->ApplicableStandard }}</td>
-                                                <td>{{ $norm->ShortName }}</td>
-                                                <td>{{ date('d/m/Y', strtotime($norm->ExpeditionDate)) }}</td>
-                                                <td>{{ isset($norm->NotificationDate) ? date('d/m/Y', strtotime($norm->NotificationDate)) : '' }}</td>
+                                                
+                                                <td>{{ $report->QuoteNumber }}</td>
+                                                <td>{{ $report->BusinessName }}</td>
+                                                <td>{{ $report->BusinessExecutive }}</td>
+                                                <td>{{ date('d/m/Y', strtotime($report->Expedition)) }}</td>
+                                                <td>{{ $report->type->Description }}</td>
+                                                <td>{{ $report->ToName }}</td>
                                                 <td>
-                                                    @include('admin.maintenance.norms.delete', $norm)
+                                                    @include('admin.reports.delete', $report)
                                                 </td>
                                             </tr>        
                                         @endforeach

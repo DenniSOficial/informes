@@ -24,6 +24,22 @@
                 </li>
 
                 {{-- <li>
+                    <a href="{{ route('activity.index') }}" class="waves-effect">
+                        <div class="d-inline-block icons-sm mr-1"><i class="uim uim-airplay"></i></div>
+                        <span>Actividades</span>
+                    </a>
+                </li> --}}
+
+                <li class="menu-title">GESTION</li>
+
+                <li>
+                    <a href="{{ route('report.index') }}" class="waves-effect">
+                        <div class="d-inline-block icons-sm mr-1"><i class="uim uim-airplay"></i></div>
+                        <span>Informes</span>
+                    </a>
+                </li>
+
+                {{-- <li>
                     <a href="calendar.html" class=" waves-effect">
                         <div class="d-inline-block icons-sm mr-1"><i class="uim uim-schedule"></i></div>
                         <span>Calendar</span>

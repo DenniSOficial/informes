@@ -7,7 +7,9 @@ use App\Models\Authority;
 use App\Imports\NormsImport;
 
 use Illuminate\Http\Request;
+use Auth;
 use Excel;
+use Carbon\Carbon;
 
 class NormController extends Controller
 {
@@ -31,8 +33,7 @@ class NormController extends Controller
     public function create()
     {
         $norm = null;
-        $authorities = Authority::where('IdState', 1)
-                                    ->orderBy('Name')->get();
+        $authorities = Authority::where('IdState', 1)->orderBy('Name')->pluck('Name', 'IdAuthority');
 
         return view('admin.maintenance.norms.create')
                 ->with('norm', $norm)
@@ -47,7 +48,39 @@ class NormController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = request()->validate([
+            'code' => 'required',
+            'authority' => 'required',
+            'norm' => 'required',
+            'name' => 'required',
+            'shortname' => 'required',
+            'expedition' => 'required',
+            'place' => 'required'
+        ], [
+            'code.required' => 'El campo código es obligatorio'
+        ]);
+
+        $norm = new Norm();
+        $norm->IdAuthorityApprove = $request->authority;
+        $norm->IdState = 1;
+        $norm->CodeNorm = $request->code;
+        $norm->ApplicableStandard = $request->norm;
+        $norm->ShortName = $request->shortname;
+        $norm->LargeName = $request->name;
+        $norm->PlaceApplication = $request->place;
+        $norm->ExpeditionDate = $request->expedition;
+        if (isset($request->notification)) {
+            $norm->NotificationDate = $request->notification;
+        }
+        if (isset($request->url)) {
+            $norm->Url = $request->url;
+        }
+        $norm->UserCreated = Auth::user()->username;
+        $norm->DateCreated = Carbon::now();
+        $norm->save();
+
+        return redirect()->route('norm.index')->with('success', 'Norm registered successfully');
+        
     }
 
     /**
@@ -58,7 +91,9 @@ class NormController extends Controller
      */
     public function show($id)
     {
-        //
+        $norm = Norm::find($id);
+
+        dd($norm);
     }
 
     /**
@@ -69,7 +104,13 @@ class NormController extends Controller
      */
     public function edit($id)
     {
-        //
+        $norm = Norm::find($id);
+
+        $authorities = Authority::where('IdState', 1)->orderBy('Name')->pluck('Name', 'IdAuthority');
+
+        return view('admin.maintenance.norms.edit')
+                ->with('norm', $norm)
+                ->with('authorities', $authorities);
     }
 
     /**
@@ -81,7 +122,37 @@ class NormController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = request()->validate([
+            'code' => 'required',
+            'authority' => 'required',
+            'norm' => 'required',
+            'name' => 'required',
+            'shortname' => 'required',
+            'expedition' => 'required',
+            'place' => 'required'
+        ], [
+            'code.required' => 'El campo código es obligatorio'
+        ]);
+
+        $norm = Norm::find($id);
+        $norm->IdAuthorityApprove = $request->authority;
+        $norm->CodeNorm = $request->code;
+        $norm->ApplicableStandard = $request->norm;
+        $norm->ShortName = $request->shortname;
+        $norm->LargeName = $request->name;
+        $norm->PlaceApplication = $request->place;
+        $norm->ExpeditionDate = $request->expedition;
+        if (isset($request->notification)) {
+            $norm->NotificationDate = $request->notification;
+        }
+        if (isset($request->url)) {
+            $norm->Url = $request->url;
+        }
+        $norm->UserUpdated = Auth::user()->username;
+        $norm->DateUpdated = Carbon::now();
+        $norm->save();
+
+        return redirect()->route('norm.index')->with('success', 'Norm updated successfully');
     }
 
     /**
@@ -92,26 +163,20 @@ class NormController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $norm = Norm::find($id);
+        $norm->IdState = 2;
+        $norm->UserUpdated = Auth::user()->username;
+        $norm->DateUpdated = Carbon::now();
+        $norm->save();
+
+        return redirect()->route('norm.index')->with('success', 'Norm deleted successfully');
     }
 
     public function import(Request $request)
     {
-        //$file = $request->file('file');
-        /* //dd($request);
-        $file = $request->file('file');
-        //dd($file);
-        Excel::load($file->path(), function($reader) {
-            foreach ($reader->toArray() as $row) {
-                dd($row);
-            }
-        }); */
-
-        //$rutaArchivo = public_path($file->path());
-
         Excel::import(new NormsImport, $request->file);
 
-        return redirect()->route('norm.index')->with('success', 'Norms imported successfully');;
+        return redirect()->route('norm.index')->with('success', 'Norms imported successfully');
 
     }
 }

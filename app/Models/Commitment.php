@@ -9,7 +9,7 @@ class Commitment extends Model
 {
     //use HasFactory;
     protected $table = 'commitments';
-    protected $primaryKey = 'IdCommitments';
+    protected $primaryKey = 'IdCommitment';
 
     protected $fillable = [
         'IdNorm',

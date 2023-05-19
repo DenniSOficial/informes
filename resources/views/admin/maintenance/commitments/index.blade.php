@@ -30,6 +30,7 @@
                             </button>
                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-animated">
                                 <a class="dropdown-item" id="btnOpenModalImport" data-toggle="modal" data-target="#myModal">Importar data</a>
+                                <a class="dropdown-item" href="{{ route('commitment.create') }}">Nuevo</a>
                                 {{-- <a class="dropdown-item" href="#">Another action</a>
                                 <a class="dropdown-item" href="#">Something else here</a>
                                 <div class="dropdown-divider"></div>
@@ -62,12 +63,13 @@
                             <table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                 <tr>
-                                    <th>Codigo</th>
+                                    <th data-priority="1">Codigo</th>
                                     <th>Norma</th>
                                     <th>Resumen</th>
                                     <th>Fase</th>
                                     <th>Frecuencia</th>
                                     <th>Descripcion del compromiso ambiental</th>
+                                    <th data-priority="2">Opciones</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -80,6 +82,9 @@
                                                 <td>{{ $commitment->phase->Name }}</td>
                                                 <td>{{ $commitment->frequency->Name }}</td>
                                                 <td>{{ $commitment->DescriptionEnvironmentalCommitment }}</td>
+                                                <td>
+                                                    @include('admin.maintenance.commitments.delete', $commitment)
+                                                </td>
                                             </tr>        
                                         @endforeach
                                     @endisset    

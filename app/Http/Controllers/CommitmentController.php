@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Commitment;
+use App\Models\Norm;
+use App\Models\Phase;
+use App\Models\Frequency;
 use App\Imports\CommitmentsImport;
 
 use Illuminate\Http\Request;
+use Auth;
 use Excel;
+use Carbon\Carbon;
 
 class CommitmentController extends Controller
 {
@@ -29,7 +34,16 @@ class CommitmentController extends Controller
      */
     public function create()
     {
-        //
+        $commitment = null;
+        $norms = Norm::where('IdState', 1)->orderBy('ApplicableStandard')->pluck('ApplicableStandard', 'IdNorm');
+        $phases = Phase::where('IdState', 1)->orderBy('Name')->pluck('Name', 'IdPhase');
+        $frequencies = Frequency::where('IdState', 1)->orderBy('Name')->pluck('Name', 'IdFrequency');
+
+        return view('admin.maintenance.commitments.create')
+                ->with('commitment', $commitment)
+                ->with('norms', $norms)
+                ->with('phases', $phases)
+                ->with('frequencies', $frequencies);
     }
 
     /**
@@ -40,7 +54,32 @@ class CommitmentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = request()->validate([
+            'code' => 'required',
+            'norm' => 'required',
+            'phase' => 'required',
+            'frequency' => 'required',
+            'summary' => 'required',
+            'description' => 'required'
+        ]);
+
+        $commitment = new Commitment();
+        $commitment->IdNorm = $request->norm;
+        $commitment->IdPhase = $request->phase;
+        $commitment->IdFrequency = $request->frequency;
+        $commitment->IdState = 1;
+        $commitment->CodeCommitment = $request->code;
+        $commitment->Summary = $request->summary;
+        $commitment->DescriptionEnvironmentalCommitment = $request->description;
+        $commitment->CoordinateUTM = $request->utm;
+        $commitment->CoordinateNUTM = $request->nutm;
+        $commitment->RelatedImpact = $request->impact;
+        $commitment->UserCreated = Auth::user()->username;
+        $commitment->DateCreated = Carbon::now();
+
+        $commitment->save();
+
+        return redirect()->route('commitment.index')->with('success', 'Commitment registered successfully');
     }
 
     /**
@@ -62,7 +101,17 @@ class CommitmentController extends Controller
      */
     public function edit($id)
     {
-        //
+        $commitment = Commitment::find($id);
+
+        $norms = Norm::where('IdState', 1)->orderBy('ApplicableStandard')->pluck('ApplicableStandard', 'IdNorm');
+        $phases = Phase::where('IdState', 1)->orderBy('Name')->pluck('Name', 'IdPhase');
+        $frequencies = Frequency::where('IdState', 1)->orderBy('Name')->pluck('Name', 'IdFrequency');
+
+        return view('admin.maintenance.commitments.edit')
+                ->with('commitment', $commitment)
+                ->with('norms', $norms)
+                ->with('phases', $phases)
+                ->with('frequencies', $frequencies);
     }
 
     /**
@@ -74,7 +123,31 @@ class CommitmentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = request()->validate([
+            'code' => 'required',
+            'norm' => 'required',
+            'phase' => 'required',
+            'frequency' => 'required',
+            'summary' => 'required',
+            'description' => 'required'
+        ]);
+
+        $commitment = Commitment::find($id);
+        $commitment->IdNorm = $request->norm;
+        $commitment->IdPhase = $request->phase;
+        $commitment->IdFrequency = $request->frequency;
+        $commitment->CodeCommitment = $request->code;
+        $commitment->Summary = $request->summary;
+        $commitment->DescriptionEnvironmentalCommitment = $request->description;
+        $commitment->CoordinateUTM = $request->utm;
+        $commitment->CoordinateNUTM = $request->nutm;
+        $commitment->RelatedImpact = $request->impact;
+        $commitment->UserUpdated = Auth::user()->username;
+        $commitment->DateUpdated = Carbon::now();
+
+        $commitment->save();
+
+        return redirect()->route('commitment.index')->with('success', 'Commitment updated successfully');
     }
 
     /**
@@ -85,7 +158,13 @@ class CommitmentController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $commitment = Commitment::find($id);
+        $commitment->IdState = 2;
+        $commitment->UserUpdated = Auth::user()->username;
+        $commitment->DateUpdated = Carbon::now();
+        $commitment->save();
+
+        return redirect()->route('commitment.index')->with('success', 'Commitment deleted successfully');
     }
 
     public function import(Request $request)

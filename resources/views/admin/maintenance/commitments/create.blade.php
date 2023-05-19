@@ -10,10 +10,10 @@
         <div class="container-fluid">
             <div class="row align-items-center">
                 <div class="col-md-8">
-                    <h4 class="page-title mb-1">Nueva Norma</h4>
+                    <h4 class="page-title mb-1">Nuevo Compromiso</h4>
                     <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ route('norm.index') }}">Normas</a></li>
-                    <li class="breadcrumb-item active">Nueva Norma</li>
+                        <li class="breadcrumb-item"><a href="{{ route('commitment.index') }}">Compromisos</a></li>
+                    <li class="breadcrumb-item active">Nueva Compromiso</li>
                     </ol>
                 </div>
                 
@@ -29,7 +29,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        @include('admin.maintenance.norms.form', ['url' => 'admin/norm', 'method' => 'POST'])
+                        @include('admin.maintenance.commitments.form', ['url' => 'admin/commitment', 'method' => 'POST'])
                     </div>
                 </div>
             </div>
